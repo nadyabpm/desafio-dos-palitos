@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#174f3f">
+<title>Desafio dos Palitos | Clube de Matemática</title>
+<style>
+:root{--green:#174f3f;--green2:#28634f;--coral:#d77f78;--cream:#fbf7ef;--sage:#d9e9df;--ink:#263b33;--gold:#d8ad59}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(145deg,#f7eee5,#f9f7f0 48%,#e4eee6);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink);display:flex;justify-content:center;padding:10px}
+.app{width:min(100%,1500px);min-height:calc(100vh - 12px);display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 4px 18px}
+.brand{font-weight:850;color:var(--green);letter-spacing:.02em}.brand small{display:block;color:#718078;font-weight:600;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase}
+.pill{background:white;border:1px solid #d9e3dc;border-radius:999px;padding:8px 14px;font-weight:750;color:var(--green)}
+.timer{background:#fff4e9;border:1px solid #f0d8bf;color:#8a542e}.timer.urgent{background:#fff0ed;border-color:#e8b9b1;color:#a4473e;animation:pulse .8s infinite alternate}@keyframes pulse{to{transform:scale(1.04)}}
+.panel{background:rgba(255,255,255,.94);border:1px solid #e4ddd3;border-radius:24px;box-shadow:0 16px 42px #24463812;padding:clamp(18px,3vh,40px) clamp(20px,5vw,64px);flex:1;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly}
+h1{color:var(--green);font-size:clamp(1.7rem,4vw,2.5rem);margin:6px 0 8px;text-align:center}
+.sub{color:#66776e;text-align:center;margin:0 0 22px;max-width:620px;line-height:1.5}
+.instructions{background:#f3f7f2;border:1px solid #dce9df;border-radius:16px;padding:14px 18px;max-width:620px;width:100%;line-height:1.55;margin:0 auto 20px}
+.gamebar{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;max-width:650px;margin:0 auto 16px}
+.level{font-weight:800;color:var(--green)}.progress{height:8px;background:#e8eee9;border-radius:20px;overflow:hidden;max-width:650px;width:100%;margin:0 auto 28px}.progress span{display:block;height:100%;background:var(--coral);width:20%;transition:width .25s}
+.board{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,26px);width:100%;padding:10px 8px 14px;min-height:0;touch-action:pan-y}
+.digit{width:clamp(90px,10vw,132px);height:clamp(158px,29vh,230px);position:relative;flex:none}
+.seg{position:absolute;background:#e8c98e;border:2px solid #b98545;border-radius:9px;box-shadow:inset 0 3px 0 #fff1c9,0 3px 3px #49361c30;cursor:grab;touch-action:none;transition:filter .12s,transform .12s}
+.seg:after{content:"";position:absolute;inset:2px;border-radius:6px;background:#f4d9a6}
+.seg.off{background:#e9ece8;border:2px dashed #c7d1ca;box-shadow:none;opacity:.65;cursor:crosshair}
+.seg.off:after{display:none}
+.seg.dragging{filter:brightness(1.12);transform:scale(1.05);z-index:5}
+.seg.a,.seg.g,.seg.d{height:14px;width:68%;left:16%}
+.seg.a{top:0}.seg.g{top:43.5%}.seg.d{bottom:0}
+.seg.b,.seg.c,.seg.e,.seg.f{width:14px;height:39%;}
+.seg.f{left:5%;top:5%}.seg.b{right:5%;top:5%}.seg.e{left:5%;bottom:5%}.seg.c{right:5%;bottom:5%}
+.operator{font-size:clamp(2.5rem,7vw,4rem);font-weight:800;color:var(--coral);width:48px;text-align:center;flex:none}
+.feedback{min-height:40px;max-width:760px;width:100%;border-radius:14px;background:#f7f5ef;padding:9px 12px;text-align:center;color:#53665c;font-weight:650;margin:2px auto 8px}
+.feedback.good{background:#eaf5ed;color:#1d6744}.feedback.bad{background:#fff0ed;color:#9b4c43}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+button{border:0;border-radius:999px;padding:12px 22px;font-weight:800;font-size:1rem;cursor:pointer}
+.primary{background:var(--green);color:white}.secondary{background:#f4e5e1;color:#8b4c47}.ghost{background:#edf2ee;color:var(--green)}
+button:disabled{opacity:.45;cursor:not-allowed}
+footer{text-align:center;color:#718078;font-size:.82rem;padding:8px 8px 2px}
+.hidden{display:none!important}
+@media(max-width:600px){body{padding:6px}.app{min-height:calc(100vh - 12px)}header{padding:6px 4px 8px}.panel{border-radius:18px;padding:12px}.board{gap:7px;padding:8px 0 10px}.digit{height:clamp(118px,24vh,165px);width:clamp(68px,17vw,88px)}.seg.a,.seg.g,.seg.d{height:12px}.seg.b,.seg.c,.seg.e,.seg.f{width:12px}.operator{width:30px}.instructions{font-size:.92rem}}
+@media(max-height:760px){
+  body{padding:6px}
+  .app{min-height:calc(100vh - 12px)}
+  header{padding:4px 4px 7px}
+  .panel{padding:12px 24px}
+  .gamebar{margin-bottom:8px}
+  .progress{margin-bottom:10px;height:6px}
+  #prompt{margin-bottom:4px}
+  .board{padding:8px 6px;gap:clamp(12px,2.4vw,30px)}
+  .digit{height:clamp(135px,27vh,205px);width:clamp(80px,9vw,118px)}
+}
+@media(max-height:560px){
+  .panel{padding:8px 14px}
+  .board{padding:4px 6px;gap:10px}
+  .digit{height:clamp(110px,25vh,145px);width:clamp(66px,8vw,90px)}
+  .seg.a,.seg.g,.seg.d{height:11px}
+  .seg.b,.seg.c,.seg.e,.seg.f{width:11px}
+  footer{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">CLUBE DE MATEMÁTICA<small>Trilhas de Excelência</small></div><div class="pill" id="score">0 pontos</div></header>
+<main class="panel">
+<section id="intro">
+<h1>Desafio dos Palitos</h1>
+<p class="sub">Observe a igualdade, pense com estratégia e mova os palitos indicados para transformar a operação em uma sentença verdadeira.</p>
+<div class="instructions"><strong>Como jogar</strong><br>• Arraste um palito aceso para um espaço vazio em outro algarismo.<br>• Nos níveis 1 a 3, mova 1 palito; nos níveis 4 a 6, mova exatamente 2.<br>• Você terá 1 minuto para resolver cada fase.<br>• Se o tempo acabar, o jogo avança sem contabilizar pontos.<br>• Acertou? Ganha 100 pontos + 1 ponto por segundo restante!<br>• Ao reiniciar uma fase, perde 50 pontos.<br>• São 20 fases, distribuídas em 6 níveis.</div>
+<div class="actions"><button class="primary" id="start">Começar desafio</button></div>
+</section>
+<section id="game" class="hidden" style="width:100%">
+<div class="gamebar"><span class="level" id="level">NÍVEL 1 • SOMAS</span><span class="pill timer" id="timer">1:00</span><span class="pill" id="moves">1 movimento</span></div>
+<div class="progress"><span id="progress"></span></div>
+<p class="sub" id="prompt">Mova um palito para tornar a igualdade verdadeira antes que o tempo termine.</p>
+<div class="board" id="board" aria-label="Desafio com palitos"></div>
+<div class="feedback" id="feedback" aria-live="polite">Arraste um palito aceso para um espaço vazio.</div>
+<div class="actions"><button class="ghost" id="reset">Reiniciar nível</button><button class="primary hidden" id="next">Próximo nível</button></div>
+</section>
+<section id="finish" class="hidden">
+<h1>Desafio concluído!</h1>
+<p class="sub">Você percorreu todos os níveis e colocou sua estratégia em prática.</p>
+<div class="pill" id="finalscore">20 fases em 6 níveis</div>
+<div class="actions"><button class="primary" id="again">Jogar novamente</button></div>
+</section>
+</main>
+<footer>Clube de Matemática • Pensar, testar, explicar e aprender.</footer>
+</div>
+<script>
+const puzzles = [{"start": [7, 5, 5], "op": "+", "solution": [1, 5, 6]}, {"start": [7, 7, 6], "op": "+", "solution": [1, 7, 8]}, {"start": [2, 9, 1], "op": "+", "solution": [2, 5, 7]}, {"start": [5, 7, 5], "op": "-", "solution": [6, 1, 5]}, {"start": [5, 9, 3], "op": "-", "solution": [6, 3, 3]}, {"start": [1, 9, 4], "op": "-", "solution": [7, 3, 4]}, {"start": [7, 6, 9], "op": "+", "solution": [1, 8, 9]}, {"start": [1, 2, 9], "op": "-", "solution": [7, 2, 5]}, {"start": [2, 6, 1], "op": "+", "solution": [2, 5, 7]}, {"start": [1, 8, 1], "op": "-", "solution": [7, 6, 1]}, {"start": [3, 1, 9], "op": "+", "solution": [5, 1, 6], "moves": 2}, {"start": [3, 0, 6], "op": "+", "solution": [3, 6, 9], "moves": 2}, {"start": [2, 0, 9], "op": "+", "solution": [3, 6, 9], "moves": 2}, {"start": [0, 3, 5], "op": "-", "solution": [6, 3, 3], "moves": 2}, {"start": [2, 5, 0], "op": "-", "solution": [3, 3, 0], "moves": 2}, {"start": [6, 9, 2], "op": "-", "solution": [8, 5, 3], "moves": 2}, {"start": [4, 0, 5], "op": "+", "solution": [1, 8, 9], "moves": 2}, {"start": [9, 4, 1], "op": "-", "solution": [8, 1, 7], "moves": 2}, {"start": [9, 7, 8], "op": "+", "solution": [3, 3, 6], "moves": 2}, {"start": [4, 4, 7], "op": "-", "solution": [4, 1, 3], "moves": 2}];
+const names = ['a','b','c','d','e','f','g'];
+const map = {0:'abcdef',1:'bc',2:'abdeg',3:'abcdg',4:'bcfg',5:'acdfg',6:'acdefg',7:'abc',8:'abcdefg',9:'abcdfg'};
+let level=0, points=0, state=[], dragging=null, solved=false, attemptUsed=false, answerLocked=false, movesMade=0, seconds=60, timerId=null, skipId=null;
+
+const $=id=>document.getElementById(id);
+function show(which){['intro','game','finish'].forEach(id=>$(id).classList.toggle('hidden',id!==which))}
+function setFeedback(msg,type=''){ $('feedback').textContent=msg; $('feedback').className='feedback '+type; }
+function stopTimer(){if(timerId){clearInterval(timerId);timerId=null}if(skipId){clearTimeout(skipId);skipId=null}}
+function paintTimer(){const el=$('timer');el.textContent=Math.floor(seconds/60)+':'+String(seconds%60).padStart(2,'0');el.classList.toggle('urgent',seconds<=15)}
+function startTimer(){stopTimer();seconds=60;paintTimer();timerId=setInterval(()=>{seconds--;paintTimer();if(seconds<=0){stopTimer();solved=true;attemptUsed=true;$('reset').disabled=true;$('moves').textContent='Tempo esgotado';setFeedback('Tempo esgotado! Este desafio foi pulado e não vale pontos.','bad');skipId=setTimeout(()=>{if(level<puzzles.length-1){level++;loadLevel()}else{show('finish');$('finalscore').textContent=points+' pontos conquistados'}} ,1800)}},1000)}
+function start(){stopTimer();level=0;points=0;$('score').textContent='0 pontos';loadLevel();show('game')}
+function loadLevel(){
+ stopTimer();
+ const p=puzzles[level]; state=p.start.map(n=>new Set(map[n].split('')));
+ solved=false;attemptUsed=false;answerLocked=false;movesMade=0;
+ const groups=[
+  {start:0,end:3,title:'NÍVEL 1 • ADIÇÕES',prompt:'Mova 1 palito para corrigir a adição.'},
+  {start:3,end:6,title:'NÍVEL 2 • SUBTRAÇÕES',prompt:'Mova 1 palito para corrigir a subtração.'},
+  {start:6,end:10,title:'NÍVEL 3 • ADIÇÕES E SUBTRAÇÕES',prompt:'Mova 1 palito para corrigir a igualdade.'},
+  {start:10,end:13,title:'NÍVEL 4 • ADIÇÕES',prompt:'Mova exatamente 2 palitos para corrigir a adição.'},
+  {start:13,end:16,title:'NÍVEL 5 • SUBTRAÇÕES',prompt:'Mova exatamente 2 palitos para corrigir a subtração.'},
+  {start:16,end:20,title:'NÍVEL 6 • ADIÇÕES E SUBTRAÇÕES',prompt:'Mova exatamente 2 palitos para corrigir a igualdade.'}
+ ];
+ const group=groups.find(g=>level>=g.start&&level<g.end);
+ $('level').textContent=`${group.title} • FASE ${level+1}/20`;
+ $('progress').style.width=((level-group.start+1)/(group.end-group.start)*100)+'%';
+ $('moves').textContent=(p.moves||1)+' movimento'+((p.moves||1)>1?'s':'');
+ $('prompt').textContent=group.prompt;
+ $('next').classList.add('hidden');
+ $('reset').disabled=false;
+ setFeedback('Arraste um palito aceso para qualquer espaço vazio, inclusive no mesmo algarismo.');
+ render();startTimer();
+}
+function render(){
+ const board=$('board');board.innerHTML='';
+ state.forEach((set,i)=>{
+   const digit=document.createElement('div');digit.className='digit';digit.dataset.digit=i;
+   names.forEach(n=>{
+     const el=document.createElement('div');
+     el.className='seg '+n+(set.has(n)?'':' off');
+     el.dataset.digit=i;el.dataset.segment=n;
+     if(set.has(n)){
+       el.addEventListener('pointerdown',onDown);
+     }else{
+       el.addEventListener('pointerup',onUp);
+       el.addEventListener('click',()=>{});
+     }
+     digit.appendChild(el);
+   });
+   board.appendChild(digit);
+   if(i===0 || i===1){
+     const op=document.createElement('div');op.className='operator';op.textContent=i===0?puzzles[level].op:'=';board.appendChild(op);
+   }
+ });
+}
+function onDown(e){
+ if(solved || answerLocked || seconds<=0 || movesMade >= (puzzles[level].moves||1))return;
+ e.preventDefault();
+ const el=e.currentTarget;
+ dragging={digit:+el.dataset.digit,segment:el.dataset.segment,pointer:e.pointerId};
+ el.classList.add('dragging');
+ el.setPointerCapture(e.pointerId);
+ el.addEventListener('pointerup',onPointerEnd,{once:true});
+ el.addEventListener('pointercancel',onPointerCancel,{once:true});
+}
+function onPointerCancel(e){if(dragging){dragging=null;render()}}
+function onPointerEnd(e){
+ if(!dragging)return;
+ if(solved || answerLocked || seconds<=0){dragging=null;render();return;}
+ const from=dragging;dragging=null;
+ const target=document.elementFromPoint(e.clientX,e.clientY);
+ const slot=target?.closest('.seg.off');
+ if(!slot){render();setFeedback('Solte o palito em um espaço vazio para realizar o movimento.','bad');return}
+ const toDigit=+slot.dataset.digit,toSegment=slot.dataset.segment;
+ state[from.digit].delete(from.segment);
+ state[toDigit].add(toSegment);
+ movesMade++;
+ render();
+ const allowed=puzzles[level].moves||1;
+ if(movesMade<allowed){
+   $('moves').textContent=`${movesMade}/${allowed} movimentos`;
+   setFeedback(`Movimento ${movesMade}/${allowed} realizado. Falta ${allowed-movesMade} palito para completar o desafio.`);
+ }else{check();}
+}
+function onUp(e){/* pointer release is handled by the active matchstick */}
+function decode(set){
+ const key=[...set].sort().join('');
+ return Object.keys(map).find(k=>[...map[k]].sort().join('')===key);
+}
+function check(){
+ const nums=state.map(decode);
+ if(nums.some(n=>n===undefined)){answerLocked=true;$('moves').textContent='Movimentos esgotados';setFeedback('Os movimentos não formaram algarismos válidos. Os palitos estão bloqueados: reinicie a fase ou aguarde o tempo acabar.','bad');return}
+ const a=+nums[0],b=+nums[1],c=+nums[2];
+ if((puzzles[level].op==='+' && a+b===c) || (puzzles[level].op==='-' && a-b===c)){
+   solved=true;stopTimer();const bonus=seconds;const earned=100+bonus;points+=earned;$('score').textContent=points+' pontos';
+   $('moves').textContent='Concluído';
+   $('reset').disabled=true;
+   setFeedback(`Muito bem! ${a} ${puzzles[level].op} ${b} = ${c}. Você ganhou 100 pontos + ${bonus} de bônus pelo tempo = ${earned} pontos!`,'good');
+   $('next').classList.remove('hidden');
+ }else{
+   answerLocked=true;
+   $('moves').textContent='Movimentos esgotados';
+   setFeedback(`${a} ${puzzles[level].op} ${b} = ${c} não é uma igualdade verdadeira. Os palitos estão bloqueados: reinicie o nível ou aguarde o tempo acabar.`,'bad');
+   $('reset').disabled=false;
+ }
+}
+function next(){
+ stopTimer();
+ if(level<puzzles.length-1){level++;loadLevel()}
+ else{show('finish');$('finalscore').textContent=`${points} pontos conquistados`}
+}
+$('start').addEventListener('click',start);
+$('reset').addEventListener('click',()=>{
+ if(solved || seconds<=0) return;
+ points=Math.max(0,points-50);
+ $('score').textContent=points+' pontos';
+ loadLevel();
+ setFeedback('Nível reiniciado: foram descontados 50 pontos. O cronômetro voltou a 1:00.','bad');
+});
+$('next').addEventListener('click',next);
+$('again').addEventListener('click',start);
+</script>
+</body>
+</html>
